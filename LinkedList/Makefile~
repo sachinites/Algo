@@ -1,0 +1,5 @@
+exe:	
+    gcc -g -c -I . LinkedListApi.c -o LinkedListApi.o
+	gcc LinkedListApi.o -o exe
+clean:
+	rm LinkedListApi.o exe
