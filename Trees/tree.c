@@ -622,14 +622,55 @@ _MaxSumPath(tree_node_t *root){
 	}
 }
 
+static int
+_MaxSumPath2(tree_node_t *root) {
+
+	int temp;
+	if(!root) return 0;
+
+	int left_sum  = _MaxSumPath2(root->left);
+	printf("left_sum returned = %d\n", left_sum);
+
+	int right_sum = _MaxSumPath2(root->right);
+	printf("right_sum returned = %d\n", right_sum);	
+
+	if(!left_sum && !right_sum) {
+
+		temp = root->data;
+		printf("temp = %d\n", temp);
+		return temp;
+	}
+
+	if(!left_sum && right_sum){
+
+		temp = (root->data + MAX(right_sum, left_sum));
+		printf("temp = %d\n", temp);
+		return temp;
+	}
+	
+	if(left_sum && !right_sum){
+
+		temp = (root->data + MAX(right_sum, left_sum));
+		printf("temp = %d\n", temp);
+		return temp;
+	}
+
+	temp = (root->data + MAX(left_sum, right_sum));
+	printf("temp = %d\n", temp);
+	return temp;
+}
 
 
 int MaxSumPath(tree_t *tree){
    if(!tree || !tree->root) 
       	return 0;
-
+#if 1
     max_sum_res_t res =  _MaxSumPath(tree->root);
     return res.recycle_sum;
+#else
+	int res2 = _MaxSumPath2(tree->root);
+	return res2;
+#endif
 }
 
 static 
@@ -757,6 +798,32 @@ _LowestCommonAncestor(tree_node_t *root, int n1, int n2)
             return root;
 }
 
+static tree_node_t*
+_LowestCommonAncestor2(tree_node_t *root, int n1, int n2)
+{
+	if(!root) return NULL;
+
+	tree_node_t *leftc  = _LowestCommonAncestor(root->left, n1, n2);
+	tree_node_t *rightc = _LowestCommonAncestor(root->right, n1, n2);	
+
+	/* if root is a leaf node */
+	if(!leftc && !rightc) {
+
+		if(root->data == n1 || root->data == n2) return root;
+	}
+
+	/* handling half nodes */
+	if((leftc && !rightc) || (!leftc && rightc)) {
+
+		if(root->data == n1 || root->data == n2)
+			return root;
+		else
+			return leftc ? leftc : rightc;
+	}
+
+	/* handling full nodes */
+	return root;
+}
 
 /*Given values of two nodes in a Binary Search Tree, write a c program to find the Lowest Common Ancestor (LCA).*/
 tree_node_t* LowestCommonAncestor(tree_t *tree, int n1, int n2)
@@ -1675,7 +1742,7 @@ main(int argc, char **argv){
     if(argc > 1)
         enableLogging = TREE_TRUE;
     tree_t *tree = init_tree();
-#if 1    
+#if 0 
     add_tree_node_by_value(tree,  100);
     add_tree_node_by_value(tree,  50);
     add_tree_node_by_value(tree,  10);
@@ -1683,7 +1750,7 @@ main(int argc, char **argv){
     add_tree_node_by_value(tree,  95);
     add_tree_node_by_value(tree,  99);
 #endif
-#if 0
+#if 1
     add_tree_node_by_value(tree,  50);
     add_tree_node_by_value(tree,  30);
     add_tree_node_by_value(tree,  10);
@@ -1695,15 +1762,15 @@ main(int argc, char **argv){
     add_tree_node_by_value(tree,  38);
     add_tree_node_by_value(tree,  100);
     add_tree_node_by_value(tree,  75);
-    //add_tree_node_by_value(tree,  200);
-    //add_tree_node_by_value(tree,  150);
-    //add_tree_node_by_value(tree,  120);
+    add_tree_node_by_value(tree,  200);
+    add_tree_node_by_value(tree,  150);
+    add_tree_node_by_value(tree,  120);
     add_tree_node_by_value(tree,  37);
     add_tree_node_by_value(tree,  36);
     add_tree_node_by_value(tree,  35);
 #endif
 
-#if 1
+#if 0
 
 	tree_node_t *node = InorderSucc(tree, 10);
 	printf("Inorder successor = %d\n", node->data);
@@ -1729,7 +1796,7 @@ main(int argc, char **argv){
     tree->root->right->right->right = init_tree_node(-4);
 #endif
 
-#if 0 
+#if 0
     /*Testing Non-Recursive Traversals*/
     printAllTraversals(tree);
     PostorderNR(tree);
@@ -1746,7 +1813,7 @@ main(int argc, char **argv){
 #endif
 
     /*Testing Maximum Sum path*/
-#if 0
+#if 1
     printf("MaxSumPath = %d\n",  MaxSumPath(tree));
 #endif
 
